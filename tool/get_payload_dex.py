@@ -21,8 +21,8 @@ def get_payload_length(hex_dex_data):
 
 def get_payload_apk(dex_data, payload_length):
     # 从后面开始获取源apk数据,记得去掉最后存长度的那几位
-    apk_start = int(payload_length/2, 16) * -1
-    return dex_data[apk_start - 8:-8]
+    apk_start = int(payload_length, 16)*-1
+    return dex_data[apk_start - 4:-4]
 
 
 def get_payload(path):
@@ -30,9 +30,10 @@ def get_payload(path):
     hex_dex_data = binascii.b2a_hex(dex_data)
     payload_length = get_payload_length(hex_dex_data)
     print payload_length
-    hex_apk_data = get_payload_apk(hex_dex_data, payload_length)
-    apk_data = binascii.a2b_hex(hex_apk_data)
-    write_file(apk_data, './payload.apk')
+    print int(payload_length, 16)
+    hex_apk_data = get_payload_apk(dex_data, payload_length)
+    print len(hex_apk_data)
+    write_file(hex_apk_data, './payload.apk')
 
 
 def main(argv):

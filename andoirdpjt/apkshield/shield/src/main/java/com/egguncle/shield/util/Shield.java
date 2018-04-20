@@ -38,15 +38,16 @@ public class Shield {
             Log.i(TAG, "getPayloadApk: " + e.getLocalizedMessage());
         }
         int payloadLength = getPayloadApkLength(dexData);
-        Log.i(TAG, "getPayloadApk: " + payloadLength / 2);
-        byte[] payloadData = getPayloadApkDataFromShield(dexData, payloadLength / 2);
+        Log.i(TAG, "getPayloadApk: " + payloadLength);
+        byte[] payloadData = getPayloadApkDataFromShield(dexData, payloadLength);
         writePayloadDataToDisk(payloadData);
     }
 
     private String getShieldApk() {
         String path = "";
         //先调试一下看看,把现成加好payload的apk放在sd目录下
-        return mContext.getApplicationInfo().sourceDir;
+        return getPath();
+        // return mContext.getApplicationInfo().sourceDir;
     }
 
     private String getPath() {
@@ -69,8 +70,8 @@ public class Shield {
     private int getPayloadApkLength(byte[] dexData) {
         byte[] bytes = new byte[4];
         System.arraycopy(dexData, dexData.length - 4, bytes, 0, 4);
-//        Log.i(TAG, "getPayloadApkLength: " + bytesToHexString(bytes));
-//        Log.i(TAG, "getPayloadApkLength: " + Integer.parseInt(bytesToHexString(bytes), 16));
+        Log.i(TAG, "getPayloadApkLength: " + bytesToHexString(bytes));
+        Log.i(TAG, "getPayloadApkLength: " + Integer.parseInt(bytesToHexString(bytes), 16));
         return Integer.parseInt(bytesToHexString(bytes), 16);
     }
 

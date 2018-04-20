@@ -29,7 +29,10 @@ get_payload_dex.py 用来从合并后的dex(注意这里是dex不是合并后的
 
 在apk中解析出源apk,工具和应用内都完成了该部分功能
 
-####　未完成的部分
+调用源app的application 的oncreate方法,参考了一些别人的思路,先调起来吧,activity还没起来
+
+#### 未完成的部分
+
 反编译源apk，修改其mainfest.xml文件，因为这里要让壳来解出原先的apk，再运行apk的application
 
-动态加载apk，使其启动，还得再看看相关的知识，看起来很多地方得拿反射替一下．
+动态加载apk，使其完整启动，还得再看看相关的知识，看起来很多地方得拿反射替一下,现在只能起来application

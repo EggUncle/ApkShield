@@ -26,8 +26,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
         }
 
-        Shield shield = new Shield(this);
-        shield.getPayloadApk();
     }
 
 
