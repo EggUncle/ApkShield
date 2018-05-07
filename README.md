@@ -36,3 +36,6 @@ get_payload_dex.py 用来从合并后的dex(注意这里是dex不是合并后的
 反编译源apk，修改其mainfest.xml文件，因为这里要让壳来解出原先的apk，再运行apk的application
 
 动态加载apk，使其完整启动，还得再看看相关的知识，看起来很多地方得拿反射替一下,现在只能起来application
+
+#### 踩到的坑
+emmmm....又弄到很晚,还是没有太大的进展,倒是发现一些其他的东西,今天试了一下修改manifest,shieldapplication去代替源apk的application时,需要写上完整包名,现在解出来的apk长度太长了,java不支持32位以上的下标,刚刚查知乎说c++可以,明天再试一下看看.
