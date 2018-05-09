@@ -8,8 +8,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.egguncle.shield.util.ReflectUtil;
+import com.egguncle.shield.util.ShieldReflectUtil;
 import com.egguncle.shield.util.Shield;
+
 
 import org.xml.sax.helpers.LocatorImpl;
 
@@ -59,10 +60,10 @@ public class ShieldApplication extends Application {
         DexClassLoader payloadClassLoader = getPayloadClassLoader(odexPath, pkgName, base);
 
         //替换类加载器
-        Object currentActivityThread = ReflectUtil.invokeMethod(null, "android.app.ActivityThread", "currentActivityThread", new Class[]{}, new Object[]{});
-        Map mPackages = (Map) ReflectUtil.getFieldObjByName(currentActivityThread, "android.app.ActivityThread", "mPackages");
+        Object currentActivityThread = ShieldReflectUtil.invokeMethod(null, "android.app.ActivityThread", "currentActivityThread", new Class[]{}, new Object[]{});
+        Map mPackages = (Map) ShieldReflectUtil.getFieldObjByName(currentActivityThread, "android.app.ActivityThread", "mPackages");
         WeakReference wr = (WeakReference) mPackages.get(pkgName);
-        ReflectUtil.setFieldObjByName(wr.get(), "android.app.LoadedApk", "mClassLoader", payloadClassLoader);
+        ShieldReflectUtil.setFieldObjByName(wr.get(), "android.app.LoadedApk", "mClassLoader", payloadClassLoader);
 
         try {
             Log.i(TAG, "attachBaseContext: start get load class " + appClassName);
@@ -80,80 +81,41 @@ public class ShieldApplication extends Application {
 
         // 如果源应用配置有Appliction对象，则替换为源应用Applicaiton，以便不影响源程序逻辑。
         String appClassName = "com.egguncle.apkshield.MyApplication";
-/**
- * 调用静态方法android.app.ActivityThread.currentActivityThread
- * 获取当前activity所在的线程对象
- */
-        Object currentActivityThread = ReflectUtil.invokeMethod(null,
+        Object currentActivityThread = ShieldReflectUtil.invokeMethod(null,
                 "android.app.ActivityThread", "currentActivityThread",
                 new Class[]{}, new Object[]{});
-/**
- * 获取currentActivityThread中的mBoundApplication属性对象，该对象是一个
- *  AppBindData类对象，该类是ActivityThread的一个内部类
- */
-        Object mBoundApplication = ReflectUtil.getFieldObjByName(currentActivityThread,
+        Object mBoundApplication = ShieldReflectUtil.getFieldObjByName(currentActivityThread,
                 "android.app.ActivityThread", "mBoundApplication");
-/**
- * 获取mBoundApplication中的info属性，info 是 LoadedApk类对象
- */
 
-        Object loadedApkInfo = ReflectUtil.getFieldObjByName(mBoundApplication,
+        Object loadedApkInfo = ShieldReflectUtil.getFieldObjByName(mBoundApplication,
                 "android.app.ActivityThread$AppBindData", "info");
         if (null == loadedApkInfo) {
             Log.i(TAG, "onCreate: loadedapkinfo is null");
         } else {
         }
-
-/**
- * loadedApkInfo对象的mApplication属性置为null
- */
-        ReflectUtil.setFieldObjByName(loadedApkInfo, "android.app.LoadedApk", "mApplication", null);
-
-
-/**
- * 获取currentActivityThread对象中的mInitialApplication属性
- * 这货是个正牌的 Application
- */
-        Object oldApplication = ReflectUtil.getFieldObjByName(currentActivityThread,
+        ShieldReflectUtil.setFieldObjByName(loadedApkInfo, "android.app.LoadedApk", "mApplication", null);
+        Object oldApplication = ShieldReflectUtil.getFieldObjByName(currentActivityThread,
                 "android.app.ActivityThread", "mInitialApplication");
 
-
-/**
- * 获取currentActivityThread对象中的mAllApplications属性
- * 这货是 装Application的列表
- */
-        ArrayList<Application> mAllApplications = (ArrayList<Application>) ReflectUtil
+        ArrayList<Application> mAllApplications = (ArrayList<Application>) ShieldReflectUtil
                 .getFieldObjByName(currentActivityThread, "android.app.ActivityThread", "mAllApplications");
-//列表对象终于可以直接调用了 remove调了之前获取的application 抹去记录的样子
+
         mAllApplications.remove(oldApplication);
 
-
-/**
- * 获取前面得到LoadedApk对象中的mApplicationInfo属性，是个ApplicationInfo对象
- */
-        ApplicationInfo appinfo_In_LoadedApk = (ApplicationInfo) ReflectUtil
+        ApplicationInfo appinfo_In_LoadedApk = (ApplicationInfo) ShieldReflectUtil
                 .getFieldObjByName(loadedApkInfo, "android.app.LoadedApk", "mApplicationInfo");
 
-/**
- * 获取前面得到AppBindData对象中的appInfo属性，也是个ApplicationInfo对象
- */
-        ApplicationInfo appinfo_In_AppBindData = (ApplicationInfo) ReflectUtil
+        ApplicationInfo appinfo_In_AppBindData = (ApplicationInfo) ShieldReflectUtil
                 .getFieldObjByName(mBoundApplication, "android.app.ActivityThread$AppBindData", "appInfo");
 
-//把这两个对象的className属性设置为从meta-data中获取的被加密apk的application路径
         appinfo_In_LoadedApk.className = appClassName;
         appinfo_In_AppBindData.className = appClassName;
 
-/**
-
- * 调用LoadedApk中的makeApplication 方法 造一个application
- * 前面改过路径了
- */
-        Application app = (Application) ReflectUtil.invokeMethod(loadedApkInfo,
+        Application app = (Application) ShieldReflectUtil.invokeMethod(loadedApkInfo,
                 "android.app.LoadedApk", "makeApplication",
                 new Class[]{boolean.class, Instrumentation.class},
                 new Object[]{false, null});
-        ReflectUtil.setFieldObjByName(currentActivityThread, "android.app.ActivityThread", "mInitialApplication", app);
+        ShieldReflectUtil.setFieldObjByName(currentActivityThread, "android.app.ActivityThread", "mInitialApplication", app);
 
         if (null == app) {
             Log.i(TAG, "onCreate: app is null");
