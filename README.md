@@ -29,11 +29,9 @@ get_payload_dex.py 用来从合并后的dex(注意这里是dex不是合并后的
 
 在apk中解析出源apk,工具和应用内都完成了该部分功能
 
-调用源app的application 的oncreate方法,参考了一些别人的思路,先调起来吧,activity还没起来
+调用源app的application 的oncreate方法
 
-#### 未完成的部分
-
-反编译源apk，修改其mainfest.xml文件
+目前只是一个简单的demo,回头再看看jni吧.
 
 #### 踩到的坑
 emmmm....又弄到很晚,还是没有太大的进展,倒是发现一些其他的东西,今天试了一下修改manifest,shieldapplication去代替源apk的application时,需要写上完整包名,现在解出来的apk长度太长了,java不支持32位以上的下标,刚刚查知乎说c++可以,明天再试一下看看.
