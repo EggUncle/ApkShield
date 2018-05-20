@@ -43,14 +43,18 @@ def modify_manifest(path):
     tree = ET.parse(path)
     root = tree.getroot()
 
-    #package_name = root.get('package')
+    # package_name = root.get('package')
     for child in root:
         if child.tag == 'application':
-            application_tag = child
-            application_tag.set('name', shield_application_name)
+            # application_tag = child
+            # for (k, v) in child.items():
+            #     print k, v
+            #     if k == '{http://schemas.android.com/apk/res/android}name':
+             #       child['{http://schemas.android.com/apk/res/android}name']=''
+            child.set('{http://schemas.android.com/apk/res/android}name', shield_application_name)
             element = ET.Element('meta-data')
-            element.set('android:name','APPLICATION_CLASS_NAME')
-            element.set('android:value','com.egguncle.apkshield.MyApplication')
+            element.set('{http://schemas.android.com/apk/res/android}name', 'APPLICATION_CLASS_NAME')
+            element.set('{http://schemas.android.com/apk/res/android}value', 'com.egguncle.apkshield.MyApplication')
             child.append(element)
             print '---'
 

@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
  * Created by songyucheng on 18-4-19.
  */
 
-public class ReflectUtil {
+public class ShieldReflectUtil {
 
     public static Object invokeMethod(Object thiz, String clazzName, String funcName, Class[] paramTypes,
                                       Object[] params) {

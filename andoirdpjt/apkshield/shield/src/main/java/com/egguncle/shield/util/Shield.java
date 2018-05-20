@@ -46,8 +46,8 @@ public class Shield {
     private String getShieldApk() {
         String path = "";
         //先调试一下看看,把现成加好payload的apk放在sd目录下
-        return getPath();
-        // return mContext.getApplicationInfo().sourceDir;
+        //return getPath();
+        return mContext.getApplicationInfo().sourceDir;
     }
 
     private String getPath() {
