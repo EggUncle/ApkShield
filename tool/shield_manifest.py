@@ -50,11 +50,13 @@ def modify_manifest(path):
             # for (k, v) in child.items():
             #     print k, v
             #     if k == '{http://schemas.android.com/apk/res/android}name':
-             #       child['{http://schemas.android.com/apk/res/android}name']=''
+            #       child['{http://schemas.android.com/apk/res/android}name']=''
+            payload_application_name = child.get('{http://schemas.android.com/apk/res/android}name')
+            print payload_application_name
             child.set('{http://schemas.android.com/apk/res/android}name', shield_application_name)
             element = ET.Element('meta-data')
             element.set('{http://schemas.android.com/apk/res/android}name', 'APPLICATION_CLASS_NAME')
-            element.set('{http://schemas.android.com/apk/res/android}value', 'com.egguncle.apkshield.MyApplication')
+            element.set('{http://schemas.android.com/apk/res/android}value', payload_application_name)
             child.append(element)
             print '---'
 

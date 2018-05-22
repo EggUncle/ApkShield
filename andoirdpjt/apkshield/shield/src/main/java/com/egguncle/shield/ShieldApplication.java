@@ -30,10 +30,11 @@ import dalvik.system.DexClassLoader;
 public class ShieldApplication extends Application {
     private final static String TAG = ShieldApplication.class.getSimpleName();
 
+    private String appClassName;
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        String appClassName = null;
         try {
             ApplicationInfo appInfo = this.getPackageManager()
                     .getApplicationInfo(this.getPackageName(),
@@ -80,7 +81,9 @@ public class ShieldApplication extends Application {
         super.onCreate();
 
         // 如果源应用配置有Appliction对象，则替换为源应用Applicaiton，以便不影响源程序逻辑。
-        String appClassName = "com.egguncle.apkshield.MyApplication";
+        if (appClassName == null) {
+            appClassName = "com.egguncle.apkshield.MyApplication";
+        }
         Object currentActivityThread = ShieldReflectUtil.invokeMethod(null,
                 "android.app.ActivityThread", "currentActivityThread",
                 new Class[]{}, new Object[]{});
