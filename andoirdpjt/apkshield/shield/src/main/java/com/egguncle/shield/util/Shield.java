@@ -21,7 +21,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class Shield {
     private final static String TAG = Shield.class.getSimpleName();
-    private final static String PAYLOAD_APK_NAME = "payload.apk";
+    private final static String PAYLOAD_DEX_NAME = "payload.dex";
     private Context mContext;
 
     public Shield(Context context) {
@@ -35,18 +35,19 @@ public class Shield {
             dexData = decryptData(dexData);
         } catch (IOException e) {
             e.printStackTrace();
-            Log.i(TAG, "getPayloadApk: " + e.getLocalizedMessage());
+            Log.i(TAG, "getPayloadDex: " + e.getLocalizedMessage());
         }
         int payloadLength = getPayloadApkLength(dexData);
-        Log.i(TAG, "getPayloadApk: " + payloadLength);
+        Log.i(TAG, "getPayloadDex: " + payloadLength);
         byte[] payloadData = getPayloadApkDataFromShield(dexData, payloadLength);
         writePayloadDataToDisk(payloadData);
     }
 
     private String getShieldApk() {
-        String path = "";
         //先调试一下看看,把现成加好payload的apk放在sd目录下
         //return getPath();
+        //从data目录下取到自己的apk
+//        Log.i(TAG, "getShieldApk: " + mContext.getApplicationInfo().sourceDir);
         return mContext.getApplicationInfo().sourceDir;
     }
 
@@ -70,8 +71,8 @@ public class Shield {
     private int getPayloadApkLength(byte[] dexData) {
         byte[] bytes = new byte[4];
         System.arraycopy(dexData, dexData.length - 4, bytes, 0, 4);
-        Log.i(TAG, "getPayloadApkLength: " + bytesToHexString(bytes));
-        Log.i(TAG, "getPayloadApkLength: " + Integer.parseInt(bytesToHexString(bytes), 16));
+        Log.i(TAG, "getPayloadDexLength: " + bytesToHexString(bytes));
+        Log.i(TAG, "getPayloadDexLength: " + Integer.parseInt(bytesToHexString(bytes), 16));
         return Integer.parseInt(bytesToHexString(bytes), 16);
     }
 
@@ -88,11 +89,12 @@ public class Shield {
 
     private void writePayloadDataToDisk(byte[] data) {
         try {
-            FileOutputStream fout = mContext.openFileOutput(PAYLOAD_APK_NAME, MODE_PRIVATE);
+            FileOutputStream fout = mContext.openFileOutput(PAYLOAD_DEX_NAME, MODE_PRIVATE);
             fout.write(data);
             fout.close();
+            Log.i(TAG, "writePayloadDataToDisk: success " + data.length);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.i(TAG, "writePayloadDataToDisk: " + e.getMessage());
         }
 
     }

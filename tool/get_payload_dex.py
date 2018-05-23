@@ -33,7 +33,7 @@ def get_payload(path):
     print int(payload_length, 16)
     hex_apk_data = get_payload_apk(dex_data, payload_length)
     print len(hex_apk_data)
-    write_file(hex_apk_data, './payload.apk')
+    write_file(hex_apk_data, './payload.dex')
 
 
 def main(argv):

@@ -5,9 +5,10 @@ import sys
 import getopt
 import binascii
 import os
-import zipfile
 from zlib import adler32
 from hashlib import sha1
+
+from shield_manifest import shield_manifest
 
 
 def change_str(start, end, src_str, add_str):
@@ -105,7 +106,7 @@ def endan_little(data):
 
 def add_new_dex_to_payload(org_payload_apk_path):
     # 用新的dex数据 替换dex中的数据 新的dex必须在当前目录下面,所以这里就直接写死了
-    command = 'zip -m ' + org_payload_apk_path + ' classes.dex'
+    command = 'mv shield_dex.dex  classes.dex;zip -m ' + org_payload_apk_path + ' classes.dex'
     print command
     os.system(command)
 
@@ -126,14 +127,29 @@ def encrypt_payload(payload_data):
     return payload_data
 
 
+def get_dex_from_payload_apk(payload_path):
+    command = 'unzip ' + payload_path + ' classes.dex ; mv classes.dex payload_dex.dex'
+    print command
+    os.system(command)
+    return 'payload_dex.dex'
+
+
+def get_dex_from_shield_apk(shield_path):
+    command = 'unzip ' + shield_path + ' classes.dex ; mv classes.dex shield_dex.dex'
+    print command
+    os.system(command)
+    return 'shield_dex.dex'
+
+
 def add_payload_to_shield(shield_path, payload_path):
     # 解压壳apk
     # print 'unzip shield apk'
     # dex_path = unzip_apk(shield_path)
-    dex_path = shield_path
+    dex_path = get_dex_from_shield_apk(shield_path)
     print 'add source apk data'
     # 将源apk拼接到壳apk后面
-    payload_file = read_file(payload_path)
+    payload_file = read_file(get_dex_from_payload_apk(payload_path))
+    # payload_file = read_file(payload_path)
     payload_data = binascii.b2a_hex(payload_file)
     dex_data = binascii.b2a_hex(read_file(dex_path))
 
@@ -155,17 +171,16 @@ def add_payload_to_shield(shield_path, payload_path):
 
     classes_dex_data = binascii.a2b_hex(dex_data)
     # print classes_dex_data
-    write_file(classes_dex_data, "./classes.dex")
+    write_file(classes_dex_data, "./shield_dex.dex")
 
     add_new_dex_to_payload(payload_path)
-    write_file(classes_dex_data, "./classes.dex")
+    write_file(classes_dex_data, "./shield_dex.dex")
     print 'success'
 
 
 def shield(shield_path, payload_path):
     add_payload_to_shield(shield_path, payload_path)
-
-    pass
+    shield_manifest(payload_path)
 
 
 def main(argv):
@@ -174,11 +189,11 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hs:p:", ["shield_path=", "payload_path="])
     except getopt.GetoptError:
-        print '-s <shield dex path>', '-p <payload apk path>'
+        print '-s <shield apk path>', '-p <payload apk path>'
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print '-s <shield dex path>', '-p <payload apk path>'
+            print '-s <shield apk path>', '-p <payload apk path>'
             sys.exit()
         elif opt in ("-s", "--shield_path"):
             shield_path = arg

@@ -130,8 +130,14 @@ public class ShieldApplication extends Application {
 
 
     private DexClassLoader getPayloadClassLoader(String odexPath, String pkgName, Context base) {
+        String dexFilePath = odexPath + "/payload.dex";
+        odexPath = odexPath + "/odexpath";
+        File file = new File(odexPath);
+        if (!file.exists()) {
+            file.mkdir();
+        }
         return new DexClassLoader(
-                odexPath + "/payload.apk", odexPath, "/data/data/" + pkgName + "/lib", base.getClassLoader().getParent());
+                dexFilePath, odexPath, "/data/data/" + pkgName + "/lib", base.getClassLoader().getParent());
     }
 
 }
